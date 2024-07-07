@@ -177,7 +177,7 @@ string LinuxParser::User(int pid[[maybe_unused]]) { return string(); }
 long LinuxParser::UpTime(int pid) { 
   long uptime, idletime;
   string line;
-  std::ifstream stream(kProcDirectory + std::to_string(pid) + kUptimeFilename);
+  std::ifstream stream(kProcDirectory + kUptimeFilename);
   if (stream.is_open()) {
     std::getline(stream, line);
     std::istringstream linestream(line);
