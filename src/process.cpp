@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "linux_parser.h"
 #include "process.h"
 
 using std::string;
@@ -11,10 +12,56 @@ using std::to_string;
 using std::vector;
 
 // TODO: Return this process's ID
-int Process::Pid() { return 0; }
+int Process::Pid() {
+  return pid;
+}
 
 // TODO: Return this process's CPU utilization
-float Process::CpuUtilization() { return 0; }
+/*
+#define UTIME 0
+#define STIME 1
+#define CUTIME 2
+#define CSTIME 3
+#define STARTTIME 4
+
+total_time = utime + stime
+
+total_time = total_time + cutime + cstime
+
+seconds = uptime - (starttime / Hertz)
+
+cpu_usage = 100 * ((total_time / Hertz) / seconds)
+*/
+float Process::CpuUtilization() { 
+  string line;
+  string key;
+  
+  float total_time, seconds, cpu_usage;
+  int count = 1;
+  
+  vector<int> process_util{vector<int>(10,0)};  
+    
+  std::ifstream filestream(LinuxParser::kProcDirectory + to_string(pid) + LinuxParser::kStatFilename);
+  if (filestream.is_open()) {
+    while (std::getline(filestream, line)) {
+      std::istringstream linestream(line);
+      while (linestream >> key) {
+        if (count == 14 || count == 15 || count == 16 || count == 17 || count == 22) {
+          this->process_util.push_back(stoi(key));
+        }
+        count++;
+      }
+    }
+  }
+  
+  total_time = this->process_util[UTIME] + this->process_util[STIME] + this->process_util[CUTIME] + this->process_util[CSTIME];
+
+  seconds = LinuxParser::UpTime() - (this->process_util[STARTTIME] / sysconf(_SC_CLK_TCK) );
+
+  cpu_usage = 100 * ((total_time / sysconf(_SC_CLK_TCK) ) / seconds);
+  
+  return cpu_usage;
+}
 
 // TODO: Return the command that generated this process
 string Process::Command() { return string(); }
