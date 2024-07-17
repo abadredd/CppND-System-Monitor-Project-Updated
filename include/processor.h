@@ -1,45 +1,34 @@
-#ifndef PROCESS_H
-#define PROCESS_H
+#ifndef PROCESSOR_H
+#define PROCESSOR_H
 
-#include <string>
 #include <vector>
 
 using std::vector;
 
-#define UTIME 0
-#define STIME 1
-#define CUTIME 2
-#define CSTIME 3
-#define STARTTIME 4
+#define USER 0
+#define NICE 1
+#define SYSTEM 2
+#define IDLE 3
+#define IOWAIT 4
+#define IRQ 5
+#define SOFTIRQ 6
+#define STEAL 7
+#define GUEST 8
+#define GUEST_NICE 9
 
 /*
-Basic class for Process representation
-It contains relevant attributes as shown below
+     user    nice   system  idle      iowait irq   softirq  steal  guest  guest_nice
+cpu  74608   2520   24433   1117073   6176   4054  0        0      0      0
+
 */
-class Process {
+class Processor {
  public:
-  int Pid();                               // TODO: See src/process.cpp
-  std::string User();                      // TODO: See src/process.cpp
-  std::string Command();                   // TODO: See src/process.cpp
-  float CpuUtilization();                  // TODO: See src/process.cpp
-  std::string Ram();                       // TODO: See src/process.cpp
-  long int UpTime();                       // TODO: See src/process.cpp
-  bool operator<(Process const& a) const;  // TODO: See src/process.cpp
-  
-//   Process(int pid) : pid(pid) {};
-  
-  void CpuUtilization(float util){
-    cpu_usage = util;
-  } 
- 
-  Process(int& pid) : pid(pid) {};
+  float Utilization();  // TODO: See src/processor.cpp
 
   // TODO: Declare any necessary private members
+  
  private:
-  int pid;
-  float cpu_usage;
-  long uptime;
-  vector<int> process_util{vector<int>(10,0)};
+    std::vector<int> prev_cpu_util{std::vector<int>(10, 0)};
 };
 
 #endif
