@@ -23,20 +23,12 @@ int Process::Pid() {
 #define CUTIME 2
 #define CSTIME 3
 #define STARTTIME 4
-
-total_time = utime + stime
-
-total_time = total_time + cutime + cstime
-
-seconds = uptime - (starttime / Hertz)
-
-cpu_usage = 100 * ((total_time / Hertz) / seconds)
 */
 float Process::CpuUtilization() { 
   string line;
   string key;
   
-  float total_time, seconds, cpu_usage;
+  float total_time, seconds;
   int count = 1;
   
   vector<int> process_util{vector<int>(10,0)};  
@@ -69,14 +61,16 @@ string Process::Command() {
 }
 
 // TODO: Return this process's memory utilization
-string Process::Ram() { return string(); }
+string Process::Ram() { return LinuxParser::Ram(pid); }
 
 // TODO: Return the user (name) that generated this process
-string Process::User() { return string(); }
+string Process::User() { return LinuxParser::User(pid); }
 
 // TODO: Return the age of this process (in seconds)
 long int Process::UpTime() { return LinuxParser::UpTime(pid); }
 
 // TODO: Overload the "less than" comparison operator for Process objects
 // REMOVE: [[maybe_unused]] once you define the function
-bool Process::operator<(Process const& a[[maybe_unused]]) const { return true; }
+bool Process::operator<(Process const& a) const { 
+  return (cpu_usage > a.cpu_usage); 
+}
