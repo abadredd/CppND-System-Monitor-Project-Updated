@@ -2,6 +2,7 @@
 #define PROCESSOR_H
 
 #include <vector>
+
 using std::vector;
 
 #define USER 0
