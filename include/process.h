@@ -25,12 +25,20 @@ class Process {
   std::string Ram();                       // TODO: See src/process.cpp
   long int UpTime();                       // TODO: See src/process.cpp
   bool operator<(Process const& a) const;  // TODO: See src/process.cpp
-
+  
+//   Process(int pid) : pid(pid) {};
+  
+  void CpuUtilization(float util){
+    cpu_usage = util;
+  } 
+ 
   Process(int& pid) : pid(pid) {};
 
   // TODO: Declare any necessary private members
  private:
   int pid;
+  float cpu_usage;
+  long uptime;
   vector<int> process_util{vector<int>(10,0)};
 };
 
