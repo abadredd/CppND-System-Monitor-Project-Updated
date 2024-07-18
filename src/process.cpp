@@ -24,61 +24,32 @@ int Process::Pid() {
 #define CSTIME 3
 #define STARTTIME 4
 */
-// float Process::CpuUtilization() { 
-//   string line;
-//   string key;
-  
-//   float total_time, seconds;
-//   int count = 1;
-  
-//   vector<int> process_util{vector<int>(10,0)};  
-    
-//   std::ifstream filestream(LinuxParser::kProcDirectory + to_string(pid) + LinuxParser::kStatFilename);
-//   if (filestream.is_open()) {
-//     while (std::getline(filestream, line)) {
-//       std::istringstream linestream(line);
-//       while (linestream >> key) {
-//         if (count == 14 || count == 15 || count == 16 || count == 17 || count == 22) {
-//           this->process_util.push_back(stoi(key));
-//         }
-//         count++;
-//       }
-//     }
-//   }
-  
-//   total_time = this->process_util[UTIME] + this->process_util[STIME] + this->process_util[CUTIME] + this->process_util[CSTIME];
-
-//   seconds = LinuxParser::UpTime() - (this->process_util[STARTTIME] / sysconf(_SC_CLK_TCK) );
-
-//   cpu_usage = 100 * ((total_time / sysconf(_SC_CLK_TCK) ) / seconds);
-  
-//   return cpu_usage;
-// }
-
 float Process::CpuUtilization() { 
-  float uptime = (float)LinuxParser::UpTime();
-  float hertz_value = (float)sysconf(_SC_CLK_TCK);
-  float totalTime = 0.0, seconds = 0.0, cpu_usage = 0.0;
-  string line, key, value;
-  vector<string> processorStat;
-  std::ifstream fileStream(LinuxParser::kProcDirectory + std::to_string(pid) + "/stat");
-  if (fileStream.is_open()) {
-    std::getline(fileStream, line);
-    std::istringstream linestream(line);
-    while(linestream >> value){
-      //std::cout << "value: " << value << std::endl;
-      processorStat.emplace_back(value);
-    }
+  string line;
+  string key;
+  
+  float total_time, seconds;
+  int count = 0;
+  
+  vector<int> process_util;  
+    
+  std::ifstream filestream(LinuxParser::kProcDirectory + to_string(pid) + LinuxParser::kStatFilename);
+  if (filestream.is_open()) {
+      std::getline(filestream, line);
+      std::istringstream linestream(line);
+      while (linestream >> key) {
+        if (count == 13 || count == 14 || count == 15 || count == 16 || count == 21) {
+          process_util.push_back(stoi(key));
+        }
+        count++;
+      }
   }
   
-  if (processorStat.size() > 21) {
-    totalTime = std::stof(processorStat[13]) + stof(processorStat[14]) + std::stof(processorStat[15]) + std::stof(processorStat[16]);
-    
-    seconds = uptime - (std::stof(processorStat[21]) / hertz_value);
-    if (seconds > 0) {
-      cpu_usage = ( ( totalTime / hertz_value ) / seconds );
-    }
-  }
+  total_time = process_util[UTIME] + process_util[STIME] + process_util[CUTIME] + process_util[CSTIME];
+
+  seconds = LinuxParser::UpTime() - (process_util[STARTTIME] / sysconf(_SC_CLK_TCK) );
+
+  cpu_usage = 100 * ((total_time / sysconf(_SC_CLK_TCK) ) / seconds);
   
   return cpu_usage;
 }
